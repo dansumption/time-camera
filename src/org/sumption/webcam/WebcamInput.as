@@ -1,3 +1,8 @@
+/**
+ * Created by Dan Sumption - @dansumption
+ * Date: 23/10/12
+ * Time: 22:13
+ */
 package org.sumption.webcam
 {
 	import flash.display.Bitmap;
@@ -9,9 +14,11 @@ package org.sumption.webcam
 
 	public final class WebcamInput extends Sprite
 	{
-		public static const APPLE_WEBCAM_NAME:String = "USB Video Class Video";
-		public static const WEBCAM_WIDTH:int = 640;
-		public static const WEBCAM_HEIGHT:int = 480;
+		public static const CONSTRAINED_WIDTH:int = 320;
+		public static const CONSTRAINED_HEIGHT:int = 240;
+		public static const CONSTRAINED_FPS:int = 15;
+		public static const IS_CONSTRAINED:Boolean = false;
+
 		
 		private var _cam:Camera;
 		private var _vid:Video;
@@ -23,16 +30,39 @@ package org.sumption.webcam
 		{
 			init();
 		}
-		
+
 		private function init():void
 		{
 			_cam = Camera.getCamera();
-			_cam.setMode(_cam.width, _cam.height, 24);
-			_vid = new Video(WEBCAM_WIDTH, WEBCAM_HEIGHT);
+			_cam.setMode(width, height, fps);
+			trace('Camera set to ' + width + 'x' + height + ' @' + fps + 'fps');
+			_vid = new Video(width, height);
 			_vid.attachCamera(_cam);
-			bitmapData = new BitmapData(WEBCAM_WIDTH, WEBCAM_HEIGHT, false);
+			bitmapData = new BitmapData(width, height, false);
 		}
-		
+
+
+		override public function get width():Number
+		{
+			if (!_cam || IS_CONSTRAINED)
+				return CONSTRAINED_WIDTH;
+			return _cam.width;
+		}
+
+		override public function get height():Number
+		{
+			if (!_cam || IS_CONSTRAINED)
+				return CONSTRAINED_HEIGHT;
+			return _cam.height;
+		}
+
+		public function get fps():int
+		{
+			if (!_cam || IS_CONSTRAINED)
+				return CONSTRAINED_FPS;
+			return _cam.fps;
+		}
+
 		public function getUpdatedBitmapData():BitmapData
 		{
 			bitmapData.draw(_vid, new Matrix(-1, 0, 0, 1, bitmapData.width, 0));
@@ -55,16 +85,6 @@ package org.sumption.webcam
 		{
 			bitmap.scaleX = xScale;
 			bitmap.scaleY = yScale;
-		}
-		
-		override public function get width():Number
-		{
-			return _vid.width;
-		}
-		
-		override public function get height():Number
-		{
-			return _vid.height;
 		}
 	}
 }

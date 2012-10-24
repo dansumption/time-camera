@@ -1,5 +1,5 @@
 BrowserHistoryUtils = {
-    addEvent: function(elm, evType, fn, useCapture) {
+    addEvent:function (elm, evType, fn, useCapture) {
         useCapture = useCapture || false;
         if (elm.addEventListener) {
             elm.addEventListener(evType, fn, useCapture);
@@ -13,7 +13,7 @@ BrowserHistoryUtils = {
             elm['on' + evType] = fn;
         }
     }
-}
+};
 
 BrowserHistory = (function() {
     // type of browser
@@ -172,7 +172,7 @@ BrowserHistory = (function() {
     function setHash(hash) {
        // It would be nice if we could use document.location.hash here,
        // but it's faulty sometimes.
-       if (hash == '') hash = '#'
+       if (hash == '') hash = '#';
        document.location.hash = hash;
     }
 
@@ -335,10 +335,10 @@ BrowserHistory = (function() {
                 var bsl = backStack.length;
 
                 var urlActions = {
-                    back: false, 
-                    forward: false, 
-                    set: false
-                }
+                    back:false,
+                    forward:false,
+                    set:false
+                };
 
                 if ((window.location.hash == initialHash || window.location.href == initialHref) && (bsl == 1)) {
                     urlActions.back = true;
@@ -367,9 +367,9 @@ BrowserHistory = (function() {
                 
                 if (!urlActions.back && !urlActions.forward) {
                     var foundInStacks = {
-                        back: -1, 
-                        forward: -1
-                    }
+                        back:-1,
+                        forward:-1
+                    };
 
                     for (var i = 0; i < backStack.length; i++) {
                         if (backStack[i].flexAppUrl == getHash() && i != (bsl - 2)) {
@@ -415,8 +415,7 @@ BrowserHistory = (function() {
     }
 
     var _initialize = function () {
-        if (browser.ie)
-        {
+        if (browser.ie) {
             var scripts = document.getElementsByTagName('script');
             for (var i = 0, s; s = scripts[i]; i++) {
                 if (s.src.indexOf("history.js") > -1) {
@@ -432,15 +431,14 @@ BrowserHistory = (function() {
             //iframe.src = historyFrameSourcePrefix;
             try {
                 document.body.appendChild(iframe);
-            } catch(e) {
-                setTimeout(function() {
+            } catch (e) {
+                setTimeout(function () {
                     document.body.appendChild(iframe);
                 }, 0);
             }
         }
 
-        if (browser.safari)
-        {
+        if (browser.safari) {
             var rememberDiv = document.createElement("div");
             rememberDiv.id = 'safari_rememberDiv';
             document.body.appendChild(rememberDiv);
@@ -464,21 +462,20 @@ BrowserHistory = (function() {
             reloader_content.style.left = reloader_content.style.top = '-9999px';
             iframe = reloader_content.getElementsByTagName('iframe')[0];
 
-            if (document.getElementById("safari_remember_field").value != "" ) {
+            if (document.getElementById("safari_remember_field").value != "") {
                 historyHash = document.getElementById("safari_remember_field").value.split(",");
             }
 
         }
 
-        if (browser.firefox)
-        {
+        if (browser.firefox) {
             var anchorDiv = document.createElement("div");
             anchorDiv.id = 'firefox_anchorDiv';
             document.body.appendChild(anchorDiv);
         }
-        
+
         //setTimeout(checkForUrlChange, 50);
-    }
+    };
 
     return {
         historyHash: historyHash, 
@@ -525,11 +522,11 @@ BrowserHistory = (function() {
             {
                 window['_ie_firstload'] = true;
                 var sourceToSet = historyFrameSourcePrefix + def;
-                var func = function() {
+                var func = function () {
                     getHistoryFrame().src = sourceToSet;
                     window.location.replace("#" + def);
                     setInterval(checkForUrlChange, 50);
-                }
+                };
                 try {
                     func();
                 } catch(e) {

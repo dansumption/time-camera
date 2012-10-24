@@ -1,3 +1,8 @@
+/**
+ * Created by Dan Sumption - @dansumption
+ * Date: 23/10/12
+ * Time: 22:13
+ */
 package
 {
 
@@ -11,7 +16,7 @@ package
 	import org.sumption.visualisers.PixelColumnBitmap;
 	import org.sumption.webcam.WebcamInput;
 
-	[SWF(backgroundColor="#FFFFFF", frameRate="24")]
+	[SWF(backgroundColor="#FFFFFF", frameRate="30")]
 	public class TimeCamera extends Sprite
 	{
 		private var bitmapData:BitmapData;
@@ -42,12 +47,14 @@ package
 				removeChild(bitmap);
 			}
 
-			bitmapData = new BitmapData(stage.stageWidth, WebcamInput.WEBCAM_HEIGHT);
-			pixelColumnBitmap = new PixelColumnBitmap(bitmapData);
+			var webcamInput:WebcamInput = new WebcamInput();
+			bitmapData = new BitmapData(stage.stageWidth, webcamInput.height);
+			pixelColumnBitmap = new PixelColumnBitmap(webcamInput, bitmapData);
 			bitmap = new Bitmap(bitmapData);
 			addChild(bitmap);
 			setChildIndex(bitmap, 0);
 			bitmap.y = (stage.stageHeight - bitmapData.height)/2;
+			stage.frameRate = webcamInput.fps;
 		}
 
 		private function onEnterFrame(event:Event):void

@@ -1,9 +1,7 @@
 /**
- * Created with IntelliJ IDEA.
- * User: Dan
+ * Created by Dan Sumption - @dansumption
  * Date: 23/10/12
  * Time: 22:16
- * To change this template use File | Settings | File Templates.
  */
 package org.sumption.visualisers
 {
@@ -24,24 +22,23 @@ package org.sumption.visualisers
 		private var copyColumnRectangle:Rectangle;
 		private var copyColumnDestinationPoint:Point;
 
-		public function PixelColumnBitmap(bitmapData:BitmapData)
+		public function PixelColumnBitmap(webcamInput:WebcamInput, bitmapData:BitmapData)
 		{
+			this.webcamInput = webcamInput;
 			this.bitmapData = bitmapData;
 			init();
 		}
-
 
 
 		private function init():void
 		{
 			shiftRectangle = new Rectangle(1, 0, bitmapData.width - 1, bitmapData.height);
 			shiftDestinationPoint = new Point(0, 0);
-			copyColumnRectangle = new Rectangle(Math.floor(WebcamInput.WEBCAM_WIDTH / 2), 0, 1, WebcamInput.WEBCAM_HEIGHT);
+			copyColumnRectangle = new Rectangle(Math.floor(webcamInput.width / 2), 0, 1, webcamInput.height);
 			copyColumnDestinationPoint = new Point(bitmapData.width - 1, 0);
-			webcamInput = new WebcamInput();
 		}
 
-		public function update()
+		public function update():void
 		{
 			var updatedBitmapData:BitmapData = webcamInput.getUpdatedBitmapData();
 			bitmapData.copyPixels(bitmapData, shiftRectangle, shiftDestinationPoint);
