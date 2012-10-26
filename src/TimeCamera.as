@@ -13,6 +13,8 @@ package
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
 
+	import org.sumption.output.SaveJpegs;
+
 	import org.sumption.render.PixelColumnBitmap;
 	import org.sumption.webcam.WebcamInput;
 
@@ -21,6 +23,8 @@ package
 		private var bitmapData:BitmapData;
 		private var bitmap:Bitmap;
 		private var pixelColumnBitmap:PixelColumnBitmap;
+		private var framesGrabbed:int;
+		private var saveJpegs:SaveJpegs;
 
 		public function TimeCamera()
 		{
@@ -38,6 +42,7 @@ package
 			addEventListener(Event.ENTER_FRAME, onEnterFrame);
 		}
 
+
 		private function layoutStage(event:Event = null):void
 		{
 			if (bitmapData)
@@ -46,6 +51,7 @@ package
 				removeChild(bitmap);
 			}
 
+			framesGrabbed = 0;
 			var webcamInput:WebcamInput = new WebcamInput();
 			bitmapData = new BitmapData(stage.stageWidth, webcamInput.height);
 			pixelColumnBitmap = new PixelColumnBitmap(webcamInput, bitmapData);
@@ -54,17 +60,25 @@ package
 			setChildIndex(bitmap, 0);
 			bitmap.y = (stage.stageHeight - bitmapData.height)/2;
 			stage.frameRate = webcamInput.fps;
+			saveJpegs = new SaveJpegs();
 			CONFIG::DEBUG
 			{
 				trace('debug mode');
 				webcamInput.showCam();
 				addChild(webcamInput);
 			}
+
 		}
 
 		private function onEnterFrame(event:Event):void
 		{
 			pixelColumnBitmap.update();
+			framesGrabbed++;
+			if (framesGrabbed == stage.stageWidth)
+			{
+				saveJpegs.saveBitmap(bitmapData);
+				framesGrabbed = 0;
+			}
 		}
 	}
 }
