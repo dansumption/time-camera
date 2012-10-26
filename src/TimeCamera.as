@@ -54,6 +54,12 @@ package
 			setChildIndex(bitmap, 0);
 			bitmap.y = (stage.stageHeight - bitmapData.height)/2;
 			stage.frameRate = webcamInput.fps;
+			CONFIG::DEBUG
+			{
+				trace('debug mode');
+				webcamInput.showCam();
+				addChild(webcamInput);
+			}
 		}
 
 		private function onEnterFrame(event:Event):void

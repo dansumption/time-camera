@@ -68,23 +68,20 @@ package org.sumption.webcam
 			bitmapData.draw(_vid, new Matrix(-1, 0, 0, 1, bitmapData.width, 0));
 			return bitmapData;
 		}
-		
-		public function showCam():void
-		{
-			bitmap = new Bitmap(bitmapData);
-			addChild(bitmap);
-		}
-		
-		public function hideCam():void
-		{
-			removeChild(bitmap);
-			bitmap = null;
-		}
 
-		public function setBitmapScale (xScale:Number, yScale:Number):void
+		CONFIG::DEBUG
 		{
-			bitmap.scaleX = xScale;
-			bitmap.scaleY = yScale;
+			public function showCam():void
+			{
+				bitmap = new Bitmap(bitmapData);
+				addChild(bitmap);
+			}
+
+			public function hideCam():void
+			{
+				removeChild(bitmap);
+				bitmap = null;
+			}
 		}
 	}
 }
