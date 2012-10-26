@@ -17,7 +17,7 @@ package org.sumption.webcam
 		public static const CONSTRAINED_WIDTH:int = 320;
 		public static const CONSTRAINED_HEIGHT:int = 240;
 		public static const CONSTRAINED_FPS:int = 15;
-		public static const IS_CONSTRAINED:Boolean = false;
+		public static const IS_CONSTRAINED:Boolean = true;
 
 		
 		private var _cam:Camera;

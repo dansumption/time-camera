@@ -13,10 +13,9 @@ package
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
 
-	import org.sumption.visualisers.PixelColumnBitmap;
+	import org.sumption.render.PixelColumnBitmap;
 	import org.sumption.webcam.WebcamInput;
 
-	[SWF(backgroundColor="#FFFFFF", frameRate="30")]
 	public class TimeCamera extends Sprite
 	{
 		private var bitmapData:BitmapData;
