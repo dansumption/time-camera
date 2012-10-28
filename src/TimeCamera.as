@@ -6,79 +6,72 @@
 package
 {
 
-	import flash.display.Bitmap;
-	import flash.display.BitmapData;
 	import flash.display.Sprite;
-	import flash.display.StageAlign;
-	import flash.display.StageScaleMode;
 	import flash.events.Event;
+	import flash.system.Worker;
+	import flash.system.WorkerDomain;
+	import flash.system.WorkerState;
+	import flash.utils.ByteArray;
 
 	import org.sumption.output.SaveJpegs;
-
-	import org.sumption.render.PixelColumnBitmap;
-	import org.sumption.webcam.WebcamInput;
+	import org.sumption.render.View;
 
 	public class TimeCamera extends Sprite
 	{
-		private var bitmapData:BitmapData;
-		private var bitmap:Bitmap;
-		private var pixelColumnBitmap:PixelColumnBitmap;
-		private var framesGrabbed:int;
-		private var saveJpegs:SaveJpegs;
+
+		private var view:View;
 
 		public function TimeCamera()
 		{
-			init();
+			trace (Worker.isSupported);
+			// init();
 		}
 
+		/*
+		* Use this app as both the main worker (responsible for painting display, collecting webcam input etc), and
+		* the background worker (responsible for converting & saving the webcam output to JPEGs, screen-by-screen.
+		* This is not the most effective way of doing things (as it means having 2 copies of the entire app, rather
+		* than reducing each worker just to the functionality required by that worker), but keeps the project
+		* self-contained, with no need to embed or load a separate SWF for the JPEG conversion.
+		 */
 		private function init():void
 		{
-			stage.align = StageAlign.TOP_LEFT;
-			stage.scaleMode = StageScaleMode.NO_SCALE;
+			trace('init');
+			var swfBytes:ByteArray = this.loaderInfo.bytes;
+			trace('got swf');
 
-			layoutStage();
+			// Check to see if this is the primordial worker
+			if (Worker.current.isPrimordial)
+			{
+				trace('primordial worker');
+				view = new View(this);
+				var bgWorker:Worker = WorkerDomain.current.createWorker(swfBytes);
+				bgWorker.addEventListener(Event.WORKER_STATE, workerStateHandler);
 
-			stage.addEventListener(Event.RESIZE, layoutStage);
-			addEventListener(Event.ENTER_FRAME, onEnterFrame);
+				// set up communication between workers using
+				// setSharedProperty(), createMessageChannel(), etc.
+				// ... (not shown)
+
+				bgWorker.start();
+			}
+			else // entry point for the background worker
+			{
+				trace('background worker');
+				// set up communication between workers using getSharedProperty()
+				// ... (not shown)
+
+				var saveJpegs:SaveJpegs = new SaveJpegs();
+			}
 		}
 
-
-		private function layoutStage(event:Event = null):void
+		private function workerStateHandler(event:Event):void
 		{
-			if (bitmapData)
+			var bgWorker:Worker = event.target as Worker;
+			if (bgWorker && bgWorker.state == WorkerState.RUNNING)
 			{
-				bitmapData.dispose();
-				removeChild(bitmap);
-			}
-
-			framesGrabbed = 0;
-			var webcamInput:WebcamInput = new WebcamInput();
-			bitmapData = new BitmapData(stage.stageWidth, webcamInput.height);
-			pixelColumnBitmap = new PixelColumnBitmap(webcamInput, bitmapData);
-			bitmap = new Bitmap(bitmapData);
-			addChild(bitmap);
-			setChildIndex(bitmap, 0);
-			bitmap.y = (stage.stageHeight - bitmapData.height)/2;
-			stage.frameRate = webcamInput.fps;
-			saveJpegs = new SaveJpegs();
-			CONFIG::DEBUG
-			{
-				trace('debug mode');
-				webcamInput.showCam();
-				addChild(webcamInput);
-			}
-
-		}
-
-		private function onEnterFrame(event:Event):void
-		{
-			pixelColumnBitmap.update();
-			framesGrabbed++;
-			if (framesGrabbed == stage.stageWidth)
-			{
-				saveJpegs.saveBitmap(bitmapData);
-				framesGrabbed = 0;
+				trace("Background worker started");
 			}
 		}
+
 	}
 }
